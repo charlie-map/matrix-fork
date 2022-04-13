@@ -20,7 +20,7 @@ struct matrix {
 
 
 struct matrix* matrix_new(int n_row, int n_col);
-struct matrix* matrix_from_array(float* data, int n_row, int n_col);
+struct matrix* matrix_from_array(double* data, int n_row, int n_col);
 void           matrix_free(struct matrix* M);
 void           matrix_free_many(int n_to_free, ...);
 

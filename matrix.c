@@ -29,7 +29,7 @@ struct matrix* matrix_new(int n_row, int n_col) {
     return new_matrix;
 }
 
-struct matrix* matrix_from_array(float* data, int n_row, int n_col) {
+struct matrix* matrix_from_array(double* data, int n_row, int n_col) {
     assert(n_row >= 1 && n_col >= 1);
     struct matrix* M = matrix_new(n_row, n_col);
     for(int i = 0; i < n_row * n_col; i++) {
@@ -79,11 +79,9 @@ struct matrix* matrix_copy(struct matrix* M) {
 }
 
 /* Create a new vector which is a *view* into a row of data in a matrix. 
-
    The new and parent objects share the same data, and modifying the data in
    either will modify both vectors.  One the other hand, we do not have to copy
    any data to create a view.
-
    Note that this works because a *row* in a matrix is a contiguous chunk of
    data, a column is not, so there is no column_view method.
 */
@@ -126,7 +124,6 @@ struct vector* matrix_diagonal(struct matrix* M) {
 }
 
 /* Copy the data in a vector into a row of a matrix.
-
    Note that this method modifies the matrix in place, it does not create a
    new matrix.
 */
@@ -138,7 +135,6 @@ void matrix_copy_vector_into_row(struct matrix* M, struct vector* v, int row) {
 }
 
 /* Copy the data in a vector into a column of a matrix.
-
    Note that this method modifies the matrix in place, it does not create a
    new matrix.
 */
@@ -174,7 +170,6 @@ struct matrix* matrix_identity(int size) {
 }
 
 /* Transpose a matrix.
-
    Note that this creates a new matrix, and copies the data into the new matrix.
 */
 struct matrix* matrix_transpose(struct matrix* M) {
@@ -190,11 +185,9 @@ struct matrix* matrix_transpose(struct matrix* M) {
 // TODO: Transpose a square matrix in place.
 
 /* An attempt at a cache blocking algorithm for matrix multiplication
-
    I couldn't get this to run any faster than the naive algorithm with the j-k
    loop intercahnge.  Im not sure what I'm doing wrong at this point, it may turn
    into a stack overflow question at some point.
-
 struct matrix* matrix_multiply_cache(struct matrix* Mleft, struct matrix* Mright, int cache) {
     assert(Mleft->n_col == Mright->n_row);
     struct matrix* Mprod = matrix_zeros(Mleft->n_row, Mright->n_col);
@@ -220,7 +213,6 @@ struct matrix* matrix_multiply_cache(struct matrix* Mleft, struct matrix* Mright
 
 
 /* Compute the matrix product of two aligned matricies.
-
    Note that the order of the loops, i-k-j, is chosen to optimize the memory
    access patterns.  In this order the innermost loop is accessing memory
    contiguously.
@@ -260,7 +252,6 @@ void matrix_multiply_into(struct matrix* reciever,
 }
 
 /* Compute the matrix product transpose(M) * N.
-
    This method is more efficient than an expicit transpose followed by probuct
    of the matrix M, which would necessitate a copy of all data in M.  The order
    of the loops, k-i-j, is chosen to optimize memory access patterns.  The
@@ -296,7 +287,6 @@ struct vector* matrix_vector_multiply(struct matrix* M, struct vector* v) {
 }
 
 /* Compute the product of the transpose of a matrix M with a vector v.
-
    This method is more efficient than an expicit transpose of the matrix M,
    which would necessitate a copy of all data in M.  The order of the loops,
    j-i, is chosen to optimize memory access patterns.  In this order the
@@ -314,11 +304,9 @@ struct vector* matrix_vector_multiply_Mtv(struct matrix* M, struct vector* v) {
 }
 
 /* Compute the expression M - lambda I, where:
-
   - M is a square matrix.
   - lambda is a number (generally an eigenvalue).
   - I is an identity matrix.
-
 This is useful when backsolving for an eigenvector with known eigenvalue.
 */
 struct matrix* matrix_M_minus_lambda_I(struct matrix* M, double lambda) {
@@ -386,10 +374,8 @@ void matrix_print(struct matrix* M) {
 
 
 /* The QR decomposition of a matrix M.
-
    This decomposition factors a general matrix into the product of an
    orthogonal matrix Q with an upper triangular matrix R.
-
    The decomposition will fail if M is rank deficcient.  Currently this will
    simply cause the algorithm to fail with a divide by zero error.  I plan
    to implement some error tracking system into linalg_obj in the future.
@@ -406,17 +392,14 @@ void qr_decomp_free(struct qr_decomp* qr) {
 }
 
 /* Compute the QR decomposition of a matrix M.
-
    The current algorithm here is grahm-schmidt.  The columns of M are converted
    into an orthogonal basis by projection onto the previous vectors in the
    basis and subtracting out the projections from the current vector, resulting
    in a matrix Q.  These projections are accumulated into the matrix R.
-
    The resulting matricies Q and R satisfy:
      - M = Q * R
      - transpose(Q) * Q = Identity
      - R is upper triangular
-
    This decomposition gives a convienient way to solve general linear equations.
 */
 // TODO: Split matrix decompositions out into their own module (matrix_decomp.c).
